@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:wght@400;500;600;700&display=swap');
+
+/*
+ * Light theme is the base. Every colour lives here so the dark block below only
+ * has to redefine values, never introduce new names.
+ */
+:root {
+    --bg: #f5f7fb;
+    --surface: #ffffff;
+    --surface-2: #eef2f9;
+    --border: #dbe3ef;
+    --border-strong: #b9c6db;
+
+    --text: #1e293b;
+    --text-muted: #5b6b84;
+    --text-strong: #0f1d33;
+
+    --primary: #1e40af;
+    --primary-hover: #1b399c;
+    --on-primary: #ffffff;
+    /* Separate from --primary so link text can meet 4.5:1 on tinted surfaces. */
+    --link: #1e40af;
+    --accent: #b45309;
+    --success: #047857;
+    --danger: #c62828;
+
+    --chart-1: #1e40af;
+    --chart-2: #b45309;
+
+    --ring: rgba(30, 64, 175, 0.45);
+    --shadow: 0 1px 2px rgba(15, 29, 51, 0.05), 0 8px 24px rgba(15, 29, 51, 0.06);
+
+    --sans: 'Fira Sans', system-ui, 'Segoe UI', sans-serif;
+    --mono: 'Fira Code', ui-monospace, Consolas, monospace;
+
+    --radius: 12px;
+    --radius-sm: 8px;
+
+    /* Density 7/10: compact dashboard spacing. */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+
+    color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #080c15;
+        --surface: #101725;
+        --surface-2: #182131;
+        --border: #22304a;
+        --border-strong: #3a4c6d;
+
+        --text: #cbd6e8;
+        --text-muted: #8fa1bd;
+        --text-strong: #f1f5fc;
+
+        --primary: #3b82f6;
+        --primary-hover: #5b98ff;
+        --on-primary: #05101f;
+        --link: #7ab3ff;
+        --accent: #fbbf24;
+        --success: #34d399;
+        --danger: #f87171;
+
+        --chart-1: #4f9cff;
+        --chart-2: #fbbf24;
+
+        --ring: rgba(96, 165, 250, 0.55);
+        --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.35);
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text);
+    background:
+        radial-gradient(1000px 500px at 80% -10%, color-mix(in srgb, var(--primary) 10%, transparent), transparent),
+        var(--bg);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2 {
+    color: var(--text-strong);
+    margin: 0;
+    font-weight: 600;
+}
+
+p {
+    margin: 0;
+}
+
+code {
+    font-family: var(--mono);
+}
+
+a {
+    color: var(--link);
+}
+
+:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
