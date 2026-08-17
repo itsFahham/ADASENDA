@@ -85,12 +85,37 @@ export function watchWallets(onChange: (wallets: WalletHandle[]) => void): () =>
     };
 }
 
+/**
+ * How long to wait for `enable()` before giving up. Not a nicety: a wallet whose
+ * internal bridge is not ready logs its own timeout and simply never settles the
+ * promise, which would leave the UI spinning forever.
+ */
+const ENABLE_TIMEOUT_MS = 60_000;
+
 /** Must run from a click: `enable()` opens the wallet's popup. */
 export async function connect(key: string): Promise<FullApi> {
     const wallet = window.cardano?.[key];
     if (!isInitialApi(wallet)) throw new Error(`Wallet "${key}" is not available.`);
 
-    return await wallet.enable();
+    let timer: ReturnType<typeof setTimeout>;
+
+    const timeout = new Promise<never>((_, reject) => {
+        timer = setTimeout(
+            () =>
+                reject(
+                    new Error(
+                        "The wallet did not answer. Open it, make sure a wallet is loaded and set as the dApp account, then try again.",
+                    ),
+                ),
+            ENABLE_TIMEOUT_MS,
+        );
+    });
+
+    try {
+        return await Promise.race([wallet.enable(), timeout]);
+    } finally {
+        clearTimeout(timer!);
+    }
 }
 
 /** True when the wallet already trusts this page, so reconnecting needs no popup. */
