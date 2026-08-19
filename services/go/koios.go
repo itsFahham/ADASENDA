@@ -2,9 +2,12 @@ package main
 
 import (
 	"bytes"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"strings"
 )
 
 type KoiosProvider struct{}
@@ -100,5 +103,25 @@ func (p KoiosProvider) Balance(address string) (string, error) {
 }
 
 func (p KoiosProvider) Submit(txCborHex string) (string, error) {
+	raw, err := hex.DecodeString(txCborHex)
+	if err != nil {
+		return "", err
+	}
 
+	resp, err := http.Post(
+		"https://preprod.koios.rest/api/v1/submittx",
+		"application/cbor",
+		bytes.NewReader(raw),
+	)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	body, _ := io.ReadAll(resp.Body)
+
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("koios rejected the transaction: %s", string(body))
+	}
+
+	return strings.Trim(strings.TrimSpace(string(body)), "\""), nil
 }

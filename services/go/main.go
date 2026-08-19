@@ -13,11 +13,6 @@ import (
 	"github.com/bloxbean/cardano-client-bindings/wrappers/go/ccl"
 )
 
-type Wallet struct {
-	BaseAddress string `json:"base_address"`
-	Mnemonic    string `json:"mnemonic"`
-}
-
 func main() {
 	bridge, err := ccl.New()
 	if err != nil {
