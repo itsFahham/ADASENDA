@@ -28,9 +28,9 @@ One frontend, three interchangeable backends, one shared API contract.
 
 ```
 frontend/          React + Vite dashboard, wallet connector
-services/js/       Bun          :3001
-services/rust/     axum         :3002
-services/go/       net/http     :3003
+services/js/       Bun HTTP service  :3001   full API, both signing modes
+services/rust/     command line              builds, signs and submits one postcard
+services/go/       command line              same, in Go
 examples/          the same transaction as a single readable file per language
 docs/api.md        the contract every service implements
 wallets/           generated test wallets  (git-ignored, holds mnemonics)
@@ -55,35 +55,45 @@ no encoder promises to reproduce them.
 
 ## Run it
 
-Every service needs a funded sender wallet. First start generates one, then top it up at the
-[Preprod faucet](https://docs.cardano.org/cardano-testnets/tools/faucet) (one request per IP per day,
-so plan accordingly).
+Everything needs a funded sender wallet. The first start generates one and prints its address, then
+top it up at the [Preprod faucet](https://docs.cardano.org/cardano-testnets/tools/faucet) — one
+request per IP per day, so plan accordingly. All three languages read the same `wallets/` folder, so
+you fund it once.
 
-**JavaScript** — needs [Bun](https://bun.sh/)
+### The app
+
+The service and the frontend, two terminals. This is the part with the dashboard and the browser
+wallet. Needs [Bun](https://bun.sh/).
 
 ```bash
 cd services/js && bun install && bun run server.ts
 ```
-
-**Rust** — needs the Rust toolchain and, on Windows, the MSVC build tools
-
-```bash
-cd services/rust && cargo run
-```
-
-**Go** — needs Go 1.21+
-
-```bash
-cd services/go && go mod tidy && go run .
-```
-
-**Frontend**
 
 ```bash
 cd frontend && bun install && bun dev
 ```
 
 Then open `http://localhost:5173`.
+
+### The other two languages
+
+Rust and Go send one postcard from the command line and exit. Same library, same transaction, no
+HTTP service yet.
+
+```bash
+cd services/rust && cargo run
+```
+
+Needs the Rust toolchain and, on Windows, the MSVC build tools.
+
+```bash
+cd services/go && go mod tidy && go run .
+```
+
+Needs Go 1.21+.
+
+Every run submits a real transaction to preprod. Wait about 20 seconds between two runs: Koios only
+reports UTXOs that are already on-chain, so a second send would reuse inputs that are already gone.
 
 ## The transaction
 
