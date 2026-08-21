@@ -122,6 +122,5 @@ func (p KoiosProvider) Submit(txCborHex string) (string, error) {
 	if resp.StatusCode != 200 {
 		return "", fmt.Errorf("koios rejected the transaction: %s", string(body))
 	}
-
 	return strings.Trim(strings.TrimSpace(string(body)), "\""), nil
 }
