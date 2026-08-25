@@ -699,3 +699,35 @@ button:disabled {
     justify-content: space-between;
     gap: var(--space-3);
 }
+
+/* Which language service answers. */
+
+.service-switch {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: flex-end;
+}
+
+.service-switch-options {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.service-switch .chip {
+    font-family: var(--sans);
+}
+
+.masthead {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+    .service-switch {
+        align-items: flex-start;
+    }
+}

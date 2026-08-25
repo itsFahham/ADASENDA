@@ -33,6 +33,7 @@ func main() {
 	}
 
 	http.HandleFunc("/api/info", app.handleInfo)
+	http.HandleFunc("/api/history", app.handleHistory)
 
 	if err := http.ListenAndServe(":3003", nil); err != nil {
 		panic(err)

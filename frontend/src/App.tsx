@@ -11,6 +11,10 @@ import {
     ApiError,
 } from "./lib/api";
 import type { Info, HistoryEntry } from "./lib/api";
+import { setService } from "./lib/api";
+import { DEFAULT_SERVICE, serviceByKey } from "./lib/services";
+import type { ServiceKey } from "./lib/services";
+import { ServiceSwitch } from "./components/ServiceSwitch";
 import { connect, isEnabled, watchWallets, walletErrorMessage } from "./lib/cip30";
 import type { FullApi, WalletHandle } from "./lib/cip30";
 import {
@@ -42,6 +46,14 @@ function App() {
     const [lastTxHash, setLastTxHash] = useState("");
     const [error, setError] = useState("");
 
+    // Which language service answers. Persisted so a reload keeps the choice.
+    const [service, setServiceKey] = useState<ServiceKey>(() => {
+        const stored = localStorage.getItem("adasenda.service") as ServiceKey | null;
+        return stored ? serviceByKey(stored).key : DEFAULT_SERVICE;
+    });
+
+    const activeService = serviceByKey(service);
+
     const [mode, setMode] = useState<SendMode>("server");
     const [wallets, setWallets] = useState<WalletHandle[]>([]);
     const [connection, setConnection] = useState<Connection | null>(null);
@@ -62,6 +74,9 @@ function App() {
     const payerBalance = mode === "wallet" ? connection?.balance : info?.balance;
 
     const refresh = useCallback(async () => {
+        // Point the client at the chosen service before every round of requests.
+        setService(service);
+
         try {
             const [nextInfo, nextHistory] = await Promise.all([getInfo(), getHistory()]);
             setInfo(nextInfo);
@@ -70,7 +85,26 @@ function App() {
         } catch (err) {
             setError(err instanceof ApiError ? err.message : String(err));
         }
-    }, []);
+    }, [service]);
+
+    function handleServiceChange(key: ServiceKey) {
+        if (key === service) return;
+
+        setServiceKey(key);
+        localStorage.setItem("adasenda.service", key);
+
+        // The next service has its own balance and its own view of the history.
+        setInfo(null);
+        setHistory([]);
+        setLastTxHash("");
+        setError("");
+    }
+
+    // Not every service implements the CIP-30 endpoints yet.
+    useEffect(() => {
+        if (!activeService.wallet && mode === "wallet") setMode("server");
+    }, [activeService, mode]);
+
 
     useEffect(() => {
         refresh();
@@ -247,6 +281,12 @@ function App() {
                         forever.
                     </p>
                 </div>
+
+                <ServiceSwitch
+                    active={service}
+                    onChange={handleServiceChange}
+                    disabled={isSending}
+                />
             </header>
 
             {error && (
@@ -302,6 +342,8 @@ function App() {
                         isConnecting={isConnecting}
                         onConnect={handleConnect}
                         onDisconnect={handleDisconnect}
+                        walletSupported={activeService.wallet}
+                        serviceLabel={activeService.label}
                     />
 
                     <ComposeForm

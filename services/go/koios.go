@@ -124,3 +124,38 @@ func (p KoiosProvider) Submit(txCborHex string) (string, error) {
 	}
 	return strings.Trim(strings.TrimSpace(string(body)), "\""), nil
 }
+
+func (p KoiosProvider) Confirmations(txHashes []string) (map[string]int, error) {
+	if len(txHashes) == 0 {
+		return map[string]int{}, nil
+	}
+	body, _ := json.Marshal(map[string]interface{}{
+		"_tx_hashes": txHashes,
+	})
+
+	resp, err := http.Post(
+		"https://preprod.koios.rest/api/v1/tx_status",
+		"application/json",
+		bytes.NewReader(body),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var raw []map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&raw); err != nil {
+		return nil, err
+	}
+
+	result := map[string]int{}
+
+	for _, item := range raw {
+		hash, _ := item["tx_hash"].(string)
+		count, _ := item["num_confirmations"].(float64)
+		result[hash] = int(count)
+	}
+
+	return result, nil
+}

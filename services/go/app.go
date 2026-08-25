@@ -42,3 +42,36 @@ func (a *App) handleInfo(w http.ResponseWriter, r *http.Request) {
 		"maxMessageBytes": maxMessageBytes,
 	})
 }
+
+func (a *App) handleHistory(w http.ResponseWriter, r *http.Request) {
+	entries, err := readHistory()
+	if err != nil {
+		writeError(w, 500, err.Error())
+		return
+	}
+
+	hashes := make([]string, 0, len(entries))
+	for _, entry := range entries {
+		hashes = append(hashes, entry.TxHash)
+	}
+
+	confirmations, err := a.provider.Confirmations(hashes)
+	if err != nil {
+		confirmations = map[string]int{}
+	}
+
+	out := make([]map[string]interface{}, 0, len(entries))
+	for _, entry := range entries {
+		out = append(out, map[string]interface{}{
+			"txHash":        entry.TxHash,
+			"message":       entry.Message,
+			"lovelace":      entry.Lovelace,
+			"to":            entry.To,
+			"sentAt":        entry.SentAt,
+			"confirmations": confirmations[entry.TxHash],
+		})
+	}
+
+	writeJSON(w, 200, out)
+}
+

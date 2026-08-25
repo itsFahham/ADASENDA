@@ -19,6 +19,9 @@ interface Props {
     isConnecting: boolean;
     onConnect: (key: string) => void;
     onDisconnect: () => void;
+    /** Whether the selected service implements the CIP-30 endpoints. */
+    walletSupported: boolean;
+    serviceLabel: string;
 }
 
 export function WalletBar({
@@ -29,6 +32,8 @@ export function WalletBar({
     isConnecting,
     onConnect,
     onDisconnect,
+    walletSupported,
+    serviceLabel,
 }: Props) {
     return (
         <section className="panel wallet-bar" aria-label="Sending wallet">
@@ -46,6 +51,8 @@ export function WalletBar({
                         type="button"
                         className={`chip${mode === "wallet" ? " is-active" : ""}`}
                         onClick={() => onModeChange("wallet")}
+                        disabled={!walletSupported}
+                        title={walletSupported ? undefined : `The ${serviceLabel} service does not implement CIP-30 yet`}
                     >
                         Browser wallet
                     </button>
@@ -54,8 +61,8 @@ export function WalletBar({
 
             {mode === "server" ? (
                 <p className="field-help">
-                    The service holds the keys and signs on its own. Nothing to connect, and nothing
-                    you could do with it outside this demo.
+                    The {serviceLabel} service holds the keys and signs on its own. Nothing to connect,
+                    and nothing you could do with it outside this demo.
                 </p>
             ) : connection ? (
                 <div className="wallet-connected">
