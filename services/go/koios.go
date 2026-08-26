@@ -119,7 +119,7 @@ func (p KoiosProvider) Submit(txCborHex string) (string, error) {
 	defer resp.Body.Close()
 	body, _ := io.ReadAll(resp.Body)
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return "", fmt.Errorf("koios rejected the transaction: %s", string(body))
 	}
 	return strings.Trim(strings.TrimSpace(string(body)), "\""), nil
