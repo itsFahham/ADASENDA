@@ -1,4 +1,15 @@
-const API_URL = "http://localhost:3001";
+import { DEFAULT_SERVICE, serviceByKey } from "./services";
+import type { ServiceKey } from "./services";
+
+/**
+ * Which backend the app talks to. Kept here rather than threaded through every
+ * call: the choice is global to the page, and every request follows it.
+ */
+let active = serviceByKey(DEFAULT_SERVICE);
+
+export function setService(key: ServiceKey) {
+    active = serviceByKey(key);
+}
 
 export interface Info {
     sender: string;
@@ -23,9 +34,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     let res: Response;
 
     try {
-        res = await fetch(`${API_URL}${path}`, init);
+        res = await fetch(`${active.url}${path}`, init);
     } catch {
-        throw new ApiError("Backend not reachable. Is the server running?");
+        throw new ApiError(`The ${active.label} service is not answering on ${active.url}. Is it running?`);
     }
 
     const data = await res.json().catch(() => null);
