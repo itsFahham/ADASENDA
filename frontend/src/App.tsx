@@ -32,6 +32,7 @@ import { ComposeForm } from "./components/ComposeForm";
 import { WalletBar } from "./components/WalletBar";
 import type { Connection, SendMode } from "./components/WalletBar";
 import { HistoryList } from "./components/HistoryList";
+import { HelpPanel } from "./components/HelpPanel";
 import { ArrowDownIcon, ExternalLinkIcon, WalletIcon } from "./components/Icons";
 import "./App.css";
 
@@ -53,6 +54,8 @@ function App() {
     });
 
     const activeService = serviceByKey(service);
+
+    const [view, setView] = useState<"dashboard" | "help">("dashboard");
 
     const [mode, setMode] = useState<SendMode>("server");
     const [wallets, setWallets] = useState<WalletHandle[]>([]);
@@ -289,6 +292,28 @@ function App() {
                 />
             </header>
 
+            <nav className="tabs" aria-label="Views">
+                <button
+                    type="button"
+                    className={`tab${view === "dashboard" ? " is-active" : ""}`}
+                    onClick={() => setView("dashboard")}
+                >
+                    Dashboard
+                </button>
+                <button
+                    type="button"
+                    className={`tab${view === "help" ? " is-active" : ""}`}
+                    onClick={() => setView("help")}
+                >
+                    Help
+                </button>
+            </nav>
+
+            {view === "help" ? (
+                <HelpPanel />
+            ) : (
+                <>
+
             {error && (
                 <div className="banner banner-error" role="alert">
                     {error}
@@ -419,6 +444,9 @@ function App() {
                 </div>
                 <HistoryList entries={history} />
             </section>
+
+                </>
+            )}
         </div>
     );
 }

@@ -731,3 +731,142 @@ button:disabled {
         align-items: flex-start;
     }
 }
+
+/* Help, a plain accordion built on details/summary. */
+
+.help-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.help-item {
+    border-top: 1px solid var(--border);
+}
+
+.help-item:first-child {
+    border-top: none;
+}
+
+.help-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3) 0;
+    font-weight: 500;
+    color: var(--text-strong);
+    cursor: pointer;
+    list-style: none;
+    transition: color 160ms ease;
+}
+
+.help-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.help-item summary::after {
+    content: "+";
+    flex: none;
+    font-family: var(--mono);
+    font-size: 18px;
+    line-height: 1;
+    color: var(--text-muted);
+    transition: transform 160ms ease, color 160ms ease;
+}
+
+.help-item[open] summary::after {
+    content: "−";
+    color: var(--primary);
+}
+
+.help-item summary:hover {
+    color: var(--primary);
+}
+
+.help-item summary:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 4px;
+    border-radius: var(--radius-sm);
+}
+
+.help-answer {
+    padding: 0 0 var(--space-4);
+    max-width: 68ch;
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.65;
+}
+
+.help-answer p {
+    margin: 0 0 var(--space-3);
+}
+
+.help-answer p:last-child {
+    margin-bottom: 0;
+}
+
+.help-answer ol,
+.help-answer ul {
+    margin: 0;
+    padding-left: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.help-answer b {
+    color: var(--text-strong);
+    font-weight: 500;
+}
+
+.help-answer code {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+}
+
+.help-note {
+    padding-top: var(--space-3);
+    color: var(--accent);
+}
+
+.help-ports {
+    padding-top: var(--space-1, 4px);
+    list-style: none;
+    padding-left: 0;
+}
+
+/* Dashboard or help. */
+
+.tabs {
+    display: flex;
+    gap: var(--space-2);
+    border-bottom: 1px solid var(--border);
+}
+
+.tab {
+    padding: var(--space-3) var(--space-3);
+    font: inherit;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color 160ms ease, border-color 160ms ease;
+}
+
+.tab:hover {
+    color: var(--text-strong);
+}
+
+.tab.is-active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+.tab:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: -2px;
+    border-radius: var(--radius-sm);
+}

@@ -1,23 +1,9 @@
-/**
- * Just enough CBOR to splice a witness set into a transaction.
- *
- * A CIP-30 wallet signs with `signTx` and hands back only the witness set, not the
- * finished transaction. Assembling the two is left to the dApp, and the native
- * library exposes no helper for it.
- *
- * Decoding the transaction and re-encoding it would be the obvious route and the
- * wrong one: the signature covers the exact bytes of the body, and no encoder is
- * guaranteed to reproduce them (definite vs indefinite lengths, map key order, tags).
- * So this walks the outer array to find where each element starts and ends, and
- * rebuilds the transaction by concatenating raw slices. The body is never touched.
- */
+
 
 interface Head {
     major: number;
-    /** Additional info bits; 31 marks an indefinite length. */
     info: number;
     length: number;
-    /** Offset of the first byte after the head. */
     next: number;
 }
 
@@ -123,13 +109,7 @@ function bytesToHex(bytes: Uint8Array): string {
     return hex;
 }
 
-/**
- * Replace the witness set of `txCborHex` with `witnessSetCborHex`.
- *
- * A transaction is the array `[body, witnessSet, isValid, auxiliaryData]`. The
- * transaction we build is unsigned, so its witness set is empty and replacing it
- * outright is correct — there is nothing to merge.
- */
+
 export function attachWitnessSet(txCborHex: string, witnessSetCborHex: string): string {
     const tx = hexToBytes(txCborHex);
 
@@ -151,10 +131,7 @@ export function attachWitnessSet(txCborHex: string, witnessSetCborHex: string): 
     return bytesToHex(assembled);
 }
 
-/**
- * CIP-30 returns addresses as `cbor<address>` hex. Most wallets send the raw
- * address bytes, some wrap them in a CBOR byte string, so unwrap when we see one.
- */
+
 export function unwrapAddressHex(hex: string): string {
     const bytes = hexToBytes(hex);
     const head = readHead(bytes, 0);
