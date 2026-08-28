@@ -1,14 +1,10 @@
 use ccl::Bridge;
 
-
-
-
 #[derive(serde::Deserialize)]
 struct Wallet {
     base_address: String,
     mnemonic: String,
-    }
-
+}
 
 #[derive(serde::Deserialize)]
 struct AddressInfo {
@@ -28,7 +24,6 @@ async fn main() {
 
     println!("from: {}", sender.base_address);
     println!("to  : {}", receiver.base_address);
-
 
     let yaml = format!(
         r#"
@@ -87,10 +82,7 @@ async fn koios_utxos(address: &str) -> serde_json::Value {
         })
         .collect();
 
-
     serde_json::json!(mapped)
-
-
 }
 
 async fn koios_protocol_params() -> serde_json::Value {
@@ -112,4 +104,3 @@ async fn koios_protocol_params() -> serde_json::Value {
 
     first
 }
-
