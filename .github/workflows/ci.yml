@@ -1,0 +1,98 @@
+name: ci
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+        working-directory: frontend
+
+      - name: Typecheck
+        run: bun x tsc -b
+        working-directory: frontend
+
+      - name: Lint
+        run: bun run lint
+        working-directory: frontend
+
+      - name: Build
+        run: bun run build
+        working-directory: frontend
+
+  js:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+        working-directory: services/js
+
+      - name: Typecheck
+        run: bun x tsc --noEmit
+        working-directory: services/js
+
+  go:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: services/go/go.mod
+          cache-dependency-path: services/go/go.sum
+
+      - name: Formatting
+        run: test -z "$(gofmt -l .)" || (gofmt -l . && exit 1)
+        working-directory: services/go
+
+      - name: Vet
+        run: go vet ./...
+        working-directory: services/go
+
+      - name: Build
+        run: go build ./...
+        working-directory: services/go
+
+      # The round-trip test needs a funded wallet and the network, so it stays a
+      # local check. `go vet` already compiles it.
+
+  rust:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: services/rust
+
+      - name: Formatting
+        run: cargo fmt --check
+        working-directory: services/rust
+
+      - name: Check
+        run: cargo check --all-targets
+        working-directory: services/rust

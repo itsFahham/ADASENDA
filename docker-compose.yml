@@ -1,0 +1,30 @@
+# Runs the whole thing locally. The browser talks to the services on the host
+# ports, which is why they are published rather than kept on the internal network.
+
+services:
+  js:
+    build: ./services/js
+    image: ghcr.io/itsfahham/adasenda-js:latest
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./wallets:/app/wallets
+      - ./data:/app/data
+
+  go:
+    build: ./services/go
+    image: ghcr.io/itsfahham/adasenda-go:latest
+    ports:
+      - "3003:3003"
+    volumes:
+      - ./wallets:/app/wallets
+      - ./data:/app/data
+
+  frontend:
+    build: ./frontend
+    image: ghcr.io/itsfahham/adasenda-frontend:latest
+    ports:
+      - "8080:80"
+    depends_on:
+      - js
+      - go

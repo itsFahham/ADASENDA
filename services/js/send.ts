@@ -2,16 +2,11 @@ import { CclBridge, TESTNET } from "@bloxbean/cardano-client-lib";
 import { KoiosProvider } from "./koios-provider";
 import type { Wallet } from "./wallets";
 
-/** A metadata value is JSON inside a single-quoted YAML scalar, so both layers need escaping. */
 function metadataScalar(message: string): string {
     return JSON.stringify({ "674": { msg: message } }).replace(/'/g, "''");
 }
 
-/**
- * Builds the unsigned transaction. `from` pays and receives the change, which is
- * the only thing that differs between the server wallet and a browser wallet:
- * building never needs a private key.
- */
+
 export async function buildUnsigned(
     bridge: CclBridge,
     provider: KoiosProvider,
