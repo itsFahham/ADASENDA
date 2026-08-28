@@ -35,6 +35,9 @@ func main() {
 	http.HandleFunc("/api/info", withCORS(app.handleInfo))
 	http.HandleFunc("/api/history", withCORS(app.handleHistory))
 	http.HandleFunc("/api/send", withCORS(app.handleSend))
+	http.HandleFunc("/api/address", withCORS(app.handleAddress))
+	http.HandleFunc("/api/build", withCORS(app.handleBuild))
+	http.HandleFunc("/api/submit", withCORS(app.handleSubmit))
 
 	if err := http.ListenAndServe(":3003", nil); err != nil {
 		panic(err)

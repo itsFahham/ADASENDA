@@ -17,7 +17,7 @@ export interface Service {
 export const SERVICES: Service[] = [
     { key: "js", label: "JavaScript", url: "http://localhost:3001", wallet: true },
     { key: "rust", label: "Rust", url: "http://localhost:3002", wallet: false },
-    { key: "go", label: "Go", url: "http://localhost:3003", wallet: false },
+    { key: "go", label: "Go", url: "http://localhost:3003", wallet: true },
 ];
 
 export const DEFAULT_SERVICE: ServiceKey = "js";
